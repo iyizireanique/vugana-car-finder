@@ -1,4 +1,8 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/components/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import ProtectedRoute from '@/components/ProtectedRoute';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -8,11 +12,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Upload, Camera, CheckCircle, AlertCircle, Car, DollarSign, MapPin, Phone } from 'lucide-react';
+import { Upload, Camera, CheckCircle, AlertCircle, Car, DollarSign, MapPin, Phone, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const SellCar = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     make: '',
     model: '',
@@ -23,13 +30,11 @@ const SellCar = () => {
     mileage: '',
     location: '',
     price: '',
-    description: '',
-    ownerName: '',
-    phone: '',
-    email: ''
+    description: ''
   });
 
   const [uploadedPhotos, setUploadedPhotos] = useState<string[]>([]);
+  const [showPayment, setShowPayment] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -44,12 +49,103 @@ const SellCar = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Imodoka yawe yashyizweho!",
-      description: "Bazaguhamagara vuba kuburyo bwawe bwo kuvugana.",
-    });
+    
+    if (!user) {
+      toast({
+        title: "Ikosa",
+        description: "Ugomba kwinjira mbere yo gutangaza imodoka.",
+        variant: "destructive",
+      });
+      navigate('/auth');
+      return;
+    }
+
+    if (uploadedPhotos.length < 3) {
+      toast({
+        title: "Ikosa",
+        description: "Ugomba gushyiraho byibuze amafoto 3 y'imodoka yawe.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.price || parseInt(formData.price) < 100000) {
+      toast({
+        title: "Ikosa", 
+        description: "Igiciro cy'imodoka kigomba kuba gifite byibuze 100,000 Frw.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Save car to database
+      const { data: carData, error: carError } = await supabase
+        .from('cars')
+        .insert({
+          user_id: user.id,
+          make: formData.make,
+          model: formData.model,
+          year: parseInt(formData.year),
+          condition: formData.condition,
+          transmission: formData.transmission,
+          fuel_type: formData.fuelType,
+          mileage: formData.mileage,
+          location: formData.location,
+          price: parseInt(formData.price),
+          description: formData.description,
+          photos: uploadedPhotos,
+          status: 'pending'
+        })
+        .select()
+        .single();
+
+      if (carError) throw carError;
+
+      // Show payment form
+      setShowPayment(true);
+      toast({
+        title: "Imodoka yawe yashyizweho!",
+        description: "Ubu ugomba kwishyura 7,500 Frw kugira ngo imodoka yawe igaragare ku rubuga.",
+      });
+
+    } catch (error: any) {
+      toast({
+        title: "Ikosa",
+        description: "Ntibyakunze kongeraho imodoka yawe. Gerageza ukundi.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePayment = async (paymentMethod: 'mtn_momo' | 'card') => {
+    try {
+      // This is where payment integration would go
+      // For now, we'll simulate a payment process
+      
+      toast({
+        title: "Payment",
+        description: `Kanda kuri link y'ishyura hakoresheje ${paymentMethod === 'mtn_momo' ? 'MTN Mobile Money' : 'Card'}.`,
+      });
+
+      // Redirect to dashboard after payment simulation
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 2000);
+
+    } catch (error: any) {
+      toast({
+        title: "Payment Error",
+        description: "Ntibyakunze kwishyura. Gerageza ukundi.",
+        variant: "destructive",
+      });
+    }
   };
 
   const sellSteps = [
@@ -75,9 +171,64 @@ const SellCar = () => {
     }
   ];
 
+  if (showPayment) {
+    return (
+      <ProtectedRoute>
+        <div className="min-h-screen bg-background">
+          <Navigation />
+          
+          <div className="container mx-auto px-4 py-12">
+            <div className="max-w-md mx-auto">
+              <Card>
+                <CardHeader className="text-center">
+                  <CardTitle className="text-2xl">Ishyura Gutangaza</CardTitle>
+                  <p className="text-muted-foreground">
+                    Wishyure 7,500 Frw kugira ngo imodoka yawe igaragare ku rubuga
+                  </p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-primary mb-2">7,500 Frw</div>
+                    <p className="text-sm text-muted-foreground">Ikiguzi cyo gutangaza imodoka</p>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <Button 
+                      onClick={() => handlePayment('mtn_momo')} 
+                      className="w-full bg-yellow-500 hover:bg-yellow-600 text-white"
+                    >
+                      <Phone className="h-4 w-4 mr-2" />
+                      Ishyura na MTN Mobile Money
+                    </Button>
+                    
+                    <Button 
+                      onClick={() => handlePayment('card')} 
+                      variant="outline" 
+                      className="w-full"
+                    >
+                      <DollarSign className="h-4 w-4 mr-2" />
+                      Ishyura na Card
+                    </Button>
+                  </div>
+                  
+                  <div className="text-center text-sm text-muted-foreground">
+                    <p>Imodoka yawe izagaragara ku rubuga nyuma yo kwishyura</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+          
+          <Footer />
+        </div>
+      </ProtectedRoute>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
+    <ProtectedRoute>
+      <div className="min-h-screen bg-background">
+        <Navigation />
       
       {/* Page Header */}
       <section className="bg-gradient-hero py-16">
@@ -332,49 +483,30 @@ const SellCar = () => {
                       )}
                     </div>
 
-                    {/* Contact Details */}
+                    {/* Payment Info */}
                     <div className="border-t pt-6">
                       <h3 className="text-lg font-semibold mb-4 flex items-center">
-                        <Phone className="h-5 w-5 mr-2 text-primary" />
-                        Amakuru yawe yo Kuvugana
+                        <DollarSign className="h-5 w-5 mr-2 text-primary" />
+                        Igiciro cyo Gutangaza
                       </h3>
                       
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="ownerName">Izina Ryawe *</Label>
-                          <Input
-                            id="ownerName"
-                            placeholder="Amazina yawe yuzuye"
-                            value={formData.ownerName}
-                            onChange={(e) => handleInputChange('ownerName', e.target.value)}
-                          />
+                      <div className="bg-muted p-4 rounded-lg">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-muted-foreground">Ikiguzi cyo gutangaza:</span>
+                          <span className="font-semibold text-lg">7,500 Frw</span>
                         </div>
-
-                        <div>
-                          <Label htmlFor="phone">Nimero ya Telefone *</Label>
-                          <Input
-                            id="phone"
-                            placeholder="+250 7XX XXX XXX"
-                            value={formData.phone}
-                            onChange={(e) => handleInputChange('phone', e.target.value)}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="mt-4">
-                        <Label htmlFor="email">Email (Ntibisabwa)</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          placeholder="example@email.com"
-                          value={formData.email}
-                          onChange={(e) => handleInputChange('email', e.target.value)}
-                        />
+                        <p className="text-sm text-muted-foreground mt-2">
+                          Uzishyura nyuma yo kuzuza form. Urahya MTN Mobile Money cyangwa Card.
+                        </p>
                       </div>
                     </div>
 
-                    <Button type="submit" size="lg" variant="gradient" className="w-full">
-                      Tangaza Imodoka Yanjye
+                    <Button type="submit" size="lg" variant="gradient" className="w-full" disabled={loading}>
+                      {loading ? (
+                        <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Turategereza...</>
+                      ) : (
+                        'Tangaza Imodoka Yanjye - 7,500 Frw'
+                      )}
                     </Button>
                   </form>
                 </CardContent>
@@ -459,8 +591,9 @@ const SellCar = () => {
         </div>
       </div>
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </ProtectedRoute>
   );
 };
 

@@ -1,15 +1,18 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Menu, X, Car, Phone, User, Search, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/components/AuthContext';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { user } = useAuth();
 
   const navItems = [
     { label: 'Ahabanza', href: '/' },
     { label: 'Reba Imodoka', href: '/browse' },
-    { label: 'Gurisha Imodoka', href: '/sell' },
+    ...(user ? [{ label: 'Gurisha Imodoka', href: '/sell' }] : []),
     { label: 'Ibyerekeye', href: '/about' },
     { label: 'Tuvugishe', href: '/contact' },
   ];
@@ -32,29 +35,47 @@ const Navigation = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
-              <a
+              <Link
                 key={item.href}
-                href={item.href}
+                to={item.href}
                 className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
           </div>
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-              <Heart className="h-4 w-4 mr-2" />
-              Favorites
-            </Button>
-            <Button variant="outline" size="sm">
-              <User className="h-4 w-4 mr-2" />
-              Injira
-            </Button>
-            <Button size="sm" variant="gradient">
-              Iyandikishe
-            </Button>
+            {user ? (
+              <>
+                <Link to="/dashboard">
+                  <Button variant="outline" size="sm">
+                    <User className="h-4 w-4 mr-2" />
+                    Dashboard
+                  </Button>
+                </Link>
+                <Link to="/sell">
+                  <Button size="sm" variant="gradient">
+                    Tangaza Imodoka
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link to="/auth">
+                  <Button variant="outline" size="sm">
+                    <User className="h-4 w-4 mr-2" />
+                    Injira
+                  </Button>
+                </Link>
+                <Link to="/auth">
+                  <Button size="sm" variant="gradient">
+                    Iyandikishe
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -77,23 +98,45 @@ const Navigation = () => {
         >
           <div className="space-y-3 pt-4 border-t border-border">
             {navItems.map((item) => (
-              <a
+              <Link
                 key={item.href}
-                href={item.href}
+                to={item.href}
                 className="block px-4 py-2 text-foreground hover:bg-secondary rounded-md transition-colors duration-200"
                 onClick={() => setIsOpen(false)}
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
             <div className="px-4 space-y-3 pt-3 border-t border-border">
-              <Button variant="outline" className="w-full">
-                <User className="h-4 w-4 mr-2" />
-                Injira
-              </Button>
-              <Button className="w-full" variant="gradient">
-                Iyandikishe
-              </Button>
+              {user ? (
+                <>
+                  <Link to="/dashboard" onClick={() => setIsOpen(false)}>
+                    <Button variant="outline" className="w-full">
+                      <User className="h-4 w-4 mr-2" />
+                      Dashboard
+                    </Button>
+                  </Link>
+                  <Link to="/sell" onClick={() => setIsOpen(false)}>
+                    <Button className="w-full" variant="gradient">
+                      Tangaza Imodoka
+                    </Button>
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link to="/auth" onClick={() => setIsOpen(false)}>
+                    <Button variant="outline" className="w-full">
+                      <User className="h-4 w-4 mr-2" />
+                      Injira
+                    </Button>
+                  </Link>
+                  <Link to="/auth" onClick={() => setIsOpen(false)}>
+                    <Button className="w-full" variant="gradient">
+                      Iyandikishe
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
