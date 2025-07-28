@@ -14,7 +14,137 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      cars: {
+        Row: {
+          condition: string
+          created_at: string
+          description: string | null
+          featured: boolean | null
+          fuel_type: string
+          id: string
+          location: string
+          make: string
+          mileage: string | null
+          model: string
+          photos: string[] | null
+          price: number
+          status: string | null
+          transmission: string
+          updated_at: string
+          user_id: string
+          year: number
+        }
+        Insert: {
+          condition: string
+          created_at?: string
+          description?: string | null
+          featured?: boolean | null
+          fuel_type: string
+          id?: string
+          location: string
+          make: string
+          mileage?: string | null
+          model: string
+          photos?: string[] | null
+          price: number
+          status?: string | null
+          transmission: string
+          updated_at?: string
+          user_id: string
+          year: number
+        }
+        Update: {
+          condition?: string
+          created_at?: string
+          description?: string | null
+          featured?: boolean | null
+          fuel_type?: string
+          id?: string
+          location?: string
+          make?: string
+          mileage?: string | null
+          model?: string
+          photos?: string[] | null
+          price?: number
+          status?: string | null
+          transmission?: string
+          updated_at?: string
+          user_id?: string
+          year?: number
+        }
+        Relationships: []
+      }
+      payments: {
+        Row: {
+          amount: number
+          car_id: string | null
+          created_at: string
+          id: string
+          payment_method: string
+          payment_status: string | null
+          transaction_id: string | null
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          car_id?: string | null
+          created_at?: string
+          id?: string
+          payment_method: string
+          payment_status?: string | null
+          transaction_id?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          car_id?: string | null
+          created_at?: string
+          id?: string
+          payment_method?: string
+          payment_status?: string | null
+          transaction_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          phone: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          phone: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          phone?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
