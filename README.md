@@ -1,45 +1,57 @@
-# 🤖 Welcome to E-Robox – Powered by Anique Iyizire
+# 🚗 vugana car.rw – A Platform for Car Ads in Rwanda
 
-This is an innovative digital project focused on **E-Robox** — a smart platform designed to support e-commerce operations, automation, and user interaction. Built for speed, clarity, and seamless experience.
-
----
-
-## 🌍 Project URL
-
-👉 [Open Project on Lovable](https://lovable.dev/projects/50377a30-d830-475f-896b-54997ba7bb15)
+**vugana car.rw** ni urubuga rwifashishwa mu gushyiraho amatangazo y’imodoka mu Rwanda. Rwubatswe kugira ngo ruhuze abantu bashaka kugurisha imodoka n’abashaka kuzigura, mu buryo bwihuse, bwizewe kandi bunoze.
 
 ---
 
-## ✏️ About the Project
+## 🙋‍♂️ Uwakoze Umushinga
 
-**E-Robox** is a smart digital assistant and interactive system for managing online stores and enhancing user experience in tech environments. It aims to simplify how businesses and users interact with e-commerce tools by integrating modern UI and automation logic.
-
-This platform was designed and developed by **Anique Iyizire** using cutting-edge tools.
+Iyi platform yatekerejwe kandi ishyirwa mu bikorwa na **Anique Iyizire**, umutekinisiye mu ikoranabuhanga ukorera mu Rwanda. Intego ni ugutanga igisubizo cyoroshya ubucuruzi bw’imodoka binyuze mu ikoranabuhanga.
 
 ---
 
-## 🚀 Technologies Used
+## 🌍 URL y’Umushinga
 
-- ⚡ Vite
-- ⚛️ React
-- 💅 Tailwind CSS
-- 💬 shadcn/ui
-- 🧠 TypeScript
+👉 Live Site: [https://vuganacar.online](https://vugana.online)
 
 ---
 
-## 🛠 How to Edit the Project
+## 🎯 Intego
 
-### Option 1: Use Lovable (Recommended)
+- Guhuza abashaka kugurisha n’abashaka kugura imodoka.
+- Korohereza umuntu wese kwamamaza imodoka ye **ku buntu**.
+- Gutanga amakuru yizewe kandi arambuye kuri buri modoka.
+- Kunoza uburyo bwo **vugana** hagati y’abakoresha.
 
-- Visit [Lovable Project](https://lovable.dev/projects/50377a30-d830-475f-896b-54997ba7bb15)
-- Prompt or edit files directly
-- Changes are auto-committed
+---
 
-### Option 2: Work Locally
+## 🔧 Ikoranabuhanga Ryakoreshejwe
+
+- ⚡ Vite – Dev server
+- 🖼 Vue 3 – Frontend framework
+- 💨 Tailwind CSS – Styling
+- 🧠 JavaScript (with optional TypeScript)
+- 🔙 Frappe / Express.js (backend)
+- 🗃 MariaDB – Database
+
+---
+
+## 📌 Ibyo Urubuga Rukora
+
+- ➕ Gushyiraho amatangazo y’imodoka: ifoto, igiciro, aho iherereye, nimero ya telefone n'ibindi.
+- 🔍 Kureba urutonde rw’imodoka ziri ku isoko.
+- 📞 Kuvugana n’uwayishyizeho ukoresheje nimero cyangwa email.
+- 📱 Responsive design: igaragara neza kuri telefone na mudasobwa.
+- 🛡️ Kunoza umutekano (user account, authorization...)
+
+---
+
+## 🚀 Uko Wakoresha Project
+
+### 📦 Gukoresha Locally
 
 ```bash
-git clone <YOUR_GIT_URL>
-cd <YOUR_PROJECT_NAME>
+git clone https://github.com/username/vugana-car-rw.git
+cd vugana-car-rw
 npm install
 npm run dev
