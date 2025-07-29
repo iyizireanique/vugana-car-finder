@@ -124,27 +124,33 @@ const SellCar = () => {
     }
   };
 
-  const handlePayment = async (paymentMethod: 'mtn_momo' | 'card') => {
+  const handlePayment = async () => {
     try {
-      // This is where payment integration would go
-      // For now, we'll simulate a payment process
+      setLoading(true);
+      
+      const { data, error } = await supabase.functions.invoke('create-car-payment', {
+        body: { carData: formData }
+      });
+
+      if (error) throw error;
+
+      // Open Stripe checkout in new tab
+      window.open(data.url, '_blank');
       
       toast({
-        title: "Payment",
-        description: `Kanda kuri link y'ishyura hakoresheje ${paymentMethod === 'mtn_momo' ? 'MTN Mobile Money' : 'Card'}.`,
+        title: "Kwishura Gutangira",
+        description: "Fungura tab nshya kugira kwishura. Nyuma y'ubwo ugaruke hano.",
       });
-
-      // Redirect to dashboard after payment simulation
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 2000);
-
+      
     } catch (error: any) {
+      console.error('Payment error:', error);
       toast({
-        title: "Payment Error",
-        description: "Ntibyakunze kwishyura. Gerageza ukundi.",
+        title: "Ikosa mu Kwishura",
+        description: "Habyaye ikosa. Ongera ugerageze.",
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -194,20 +200,18 @@ const SellCar = () => {
                   
                   <div className="space-y-3">
                     <Button 
-                      onClick={() => handlePayment('mtn_momo')} 
+                      onClick={handlePayment}
+                      disabled={loading}
                       className="w-full bg-yellow-500 hover:bg-yellow-600 text-white"
                     >
-                      <Phone className="h-4 w-4 mr-2" />
-                      Ishyura na MTN Mobile Money
-                    </Button>
-                    
-                    <Button 
-                      onClick={() => handlePayment('card')} 
-                      variant="outline" 
-                      className="w-full"
-                    >
-                      <DollarSign className="h-4 w-4 mr-2" />
-                      Ishyura na Card
+                      {loading ? (
+                        <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Turategereza...</>
+                      ) : (
+                        <>
+                          <DollarSign className="h-4 w-4 mr-2" />
+                          Ishyura na Stripe (MTN Momo cyangwa Card)
+                        </>
+                      )}
                     </Button>
                   </div>
                   

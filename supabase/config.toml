@@ -1,1 +1,7 @@
 project_id = "vwfkvsaralvwngkwszzk"
+
+[functions.create-car-payment]
+verify_jwt = true
+
+[functions.verify-car-payment]
+verify_jwt = false
