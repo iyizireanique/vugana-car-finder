@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { MapPin, Calendar, Fuel, Settings, Eye, Heart, Phone } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
 
 interface CarCardProps {
   car: {
@@ -22,8 +23,14 @@ interface CarCardProps {
 }
 
 const CarCard = ({ car, className }: CarCardProps) => {
+  const navigate = useNavigate();
+  
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('rw-RW').format(price) + ' Frw';
+  };
+
+  const handleViewDetails = () => {
+    navigate(`/car/${car.id}`);
   };
 
   return (
@@ -90,11 +97,11 @@ const CarCard = ({ car, className }: CarCardProps) => {
 
         {/* Action Buttons */}
         <div className="flex space-x-2">
-          <Button variant="outline" size="sm" className="flex-1">
+          <Button variant="outline" size="sm" className="flex-1" onClick={handleViewDetails}>
             <Eye className="h-4 w-4 mr-2" />
             Reba birambuye
           </Button>
-          <Button size="sm" variant="gradient">
+          <Button size="sm" variant="gradient" onClick={handleViewDetails}>
             <Phone className="h-4 w-4 mr-2" />
             Hamagara
           </Button>

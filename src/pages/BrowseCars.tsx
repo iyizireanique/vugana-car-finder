@@ -88,6 +88,57 @@ const BrowseCars = () => {
     }
   ];
 
+  // Filter cars based on user selections
+  const filteredCars = allCars.filter(car => {
+    // Make filter
+    if (filters.make && car.make.toLowerCase() !== filters.make.toLowerCase()) {
+      return false;
+    }
+    
+    // Location filter
+    if (filters.location && car.location.toLowerCase() !== filters.location.toLowerCase()) {
+      return false;
+    }
+    
+    // Year filter
+    if (filters.year && car.year.toString() !== filters.year) {
+      return false;
+    }
+    
+    // Price filters
+    if (filters.minPrice && car.price < parseInt(filters.minPrice)) {
+      return false;
+    }
+    if (filters.maxPrice && car.price > parseInt(filters.maxPrice)) {
+      return false;
+    }
+    
+    // Transmission filter
+    if (filters.transmission && car.transmission.toLowerCase() !== filters.transmission.toLowerCase()) {
+      return false;
+    }
+    
+    // Fuel type filter
+    if (filters.fuelType && car.fuelType.toLowerCase() !== filters.fuelType.toLowerCase()) {
+      return false;
+    }
+    
+    return true;
+  });
+
+  const clearFilters = () => {
+    setFilters({
+      make: '',
+      model: '',
+      year: '',
+      location: '',
+      minPrice: '',
+      maxPrice: '',
+      transmission: '',
+      fuelType: ''
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -100,7 +151,7 @@ const BrowseCars = () => {
               Reba Imodoka Zose
             </h1>
             <p className="text-xl opacity-90">
-              Bonye imodoka {allCars.length} ziri ku isoko muri Rwanda
+              Bonye imodoka {filteredCars.length} ziri ku isoko muri Rwanda
             </p>
           </div>
         </div>
@@ -227,7 +278,7 @@ const BrowseCars = () => {
                     Shakisha
                   </Button>
 
-                  <Button variant="outline" className="w-full">
+                  <Button variant="outline" className="w-full" onClick={clearFilters}>
                     <Filter className="h-4 w-4 mr-2" />
                     Siba Filter
                   </Button>
@@ -242,7 +293,7 @@ const BrowseCars = () => {
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h3 className="text-lg font-semibold text-foreground">
-                  Byaboneka: {allCars.length} imodoka
+                  Byaboneka: {filteredCars.length} imodoka
                 </h3>
                 <p className="text-sm text-muted-foreground">
                   Zishyizweho vuba kurenza zose
@@ -272,8 +323,8 @@ const BrowseCars = () => {
               ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" 
               : "space-y-4"
             }>
-              {allCars.map((car) => (
-                <CarCard 
+              {filteredCars.map((car) => (
+                <CarCard
                   key={car.id} 
                   car={car} 
                   className={viewType === 'list' ? 'flex-row' : ''}

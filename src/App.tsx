@@ -7,6 +7,7 @@ import { AuthProvider } from "@/components/AuthContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import BrowseCars from "./pages/BrowseCars";
+import CarDetails from "./pages/CarDetails";
 import SellCar from "./pages/SellCar";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -25,6 +26,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/browse" element={<BrowseCars />} />
+            <Route path="/car/:id" element={<CarDetails />} />
             <Route path="/sell" element={<SellCar />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
