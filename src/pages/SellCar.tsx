@@ -99,19 +99,20 @@ const SellCar = () => {
           price: parseInt(formData.price),
           description: formData.description,
           photos: uploadedPhotos,
-          status: 'pending'
+          status: 'active'  // Post directly as active
         })
         .select()
         .single();
 
       if (carError) throw carError;
 
-      // Show payment form
-      setShowPayment(true);
       toast({
-        title: "Imodoka yawe yashyizweho!",
-        description: "Ubu ugomba kwishyura 7,500 Frw kugira ngo imodoka yawe igaragare ku rubuga.",
+        title: "Imodoka yawe yongerewe!",
+        description: "Imodoka yawe yamaze kugaragara ku rubuga. Ushobora kuyireba kuri Dashboard yawe.",
       });
+
+      // Navigate to dashboard immediately
+      navigate('/dashboard');
 
     } catch (error: any) {
       toast({

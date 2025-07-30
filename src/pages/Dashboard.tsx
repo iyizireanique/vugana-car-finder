@@ -252,11 +252,21 @@ const Dashboard = () => {
                       </div>
                       
                       <div className="flex space-x-2">
-                        <Button size="sm" variant="outline" className="flex-1">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="flex-1"
+                          onClick={() => navigate(`/car/${car.id}`)}
+                        >
                           <Eye className="h-4 w-4 mr-1" />
                           Reba
                         </Button>
-                        <Button size="sm" variant="outline" className="flex-1">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="flex-1"
+                          onClick={() => navigate(`/edit-car/${car.id}`)}
+                        >
                           <Edit className="h-4 w-4 mr-1" />
                           Hindura
                         </Button>
