@@ -213,6 +213,24 @@ const SellCar = () => {
                         </>
                       )}
                     </Button>
+                    
+                    <div className="text-center text-sm text-muted-foreground">
+                      <p>CYANGWA</p>
+                    </div>
+                    
+                    <Button 
+                      onClick={() => {
+                        toast({
+                          title: "Uburyo bw'Kwishyura bw'Ikinyabiziga",
+                          description: "Hamagara +250 784 386 836 kugira wishyure na Mobile Money",
+                        });
+                      }}
+                      variant="outline"
+                      className="w-full"
+                    >
+                      <Phone className="h-4 w-4 mr-2" />
+                      Ishyura na Mobile Money (Hamagara)
+                    </Button>
                   </div>
                   
                   <div className="text-center text-sm text-muted-foreground">
