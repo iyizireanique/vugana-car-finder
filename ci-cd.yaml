@@ -1,0 +1,35 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Docker image
+        run: |
+          docker build -t iyizireanique/vuganacar:latest .
+
+      # Niba ushaka kugerageza gusa build, udakenera login cyangwa push
+
+      - name: Update Kubernetes manifests with new image tag
+        run: |
+          sed -i 's|image: vuganacar:.*|image: iyizireanique/vuganacar:latest|g' k8s/deployment.yaml
+
+      - name: Commit and push updated manifests
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'actions@github.com'
+          git add k8s/deployment.yaml
+          git commit -m "Update image tag to latest"
+          git push
