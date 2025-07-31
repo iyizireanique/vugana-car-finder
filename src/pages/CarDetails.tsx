@@ -187,7 +187,7 @@ const CarDetails = () => {
                   </div>
                   <div className="flex items-center space-x-2">
                     <Fuel className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">{car.fuelType}</span>
+                    <span className="text-sm">{car.fuel_type || car.fuelType}</span>
                   </div>
                 </div>
 
@@ -198,7 +198,7 @@ const CarDetails = () => {
                     <Gauge className="h-4 w-4 text-muted-foreground" />
                     <div>
                       <p className="text-sm font-medium">Kilometres</p>
-                      <p className="text-sm text-muted-foreground">{car.mileage}</p>
+                      <p className="text-sm text-muted-foreground">{car.mileage || 'Ntanziko'}</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -226,7 +226,7 @@ const CarDetails = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground leading-relaxed">
-                  {car.description}
+                  {car.description || 'Nta bisobanuro byashyizweho kuri iyi modoka.'}
                 </p>
               </CardContent>
             </Card>
