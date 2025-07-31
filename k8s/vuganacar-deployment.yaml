@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vuganacar-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vuganacar
+  template:
+    metadata:
+      labels:
+        app: vuganacar
+    spec:
+      containers:
+        - name: vuganacar
+          image: vuganacar:latest
+          imagePullPolicy: Never  # 👈 Ibi ni ingenzi
+          ports:
+            - containerPort: 80
