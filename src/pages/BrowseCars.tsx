@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import CarCard from '@/components/CarCard';
@@ -6,13 +7,34 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
-import { Search, Filter, Grid, List, SlidersHorizontal } from 'lucide-react';
+import { Search, Filter, Grid, List, SlidersHorizontal, Loader2 } from 'lucide-react';
 import car1Image from '@/assets/car-1.jpg';
 import car2Image from '@/assets/car-2.jpg';
 import car3Image from '@/assets/car-3.jpg';
 
+interface Car {
+  id: string;
+  make: string;
+  model: string;
+  year: number;
+  price: number;
+  location: string;
+  status: string;
+  photos: string[];
+  created_at: string;
+  transmission: string;
+  fuel_type: string;
+  mileage?: string;
+  condition: string;
+  featured: boolean;
+  image?: string;
+  daysAgo?: number;
+}
+
 const BrowseCars = () => {
   const [viewType, setViewType] = useState<'grid' | 'list'>('grid');
+  const [cars, setCars] = useState<Car[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     make: '',
     model: '',
@@ -24,72 +46,43 @@ const BrowseCars = () => {
     fuelType: ''
   });
 
-  // Mock data - expanded car listings
-  const allCars = [
-    {
-      id: '1', image: car1Image, make: 'Toyota', model: 'RAV4', year: 2016,
-      price: 12000000, location: 'Kigali', daysAgo: 2, transmission: 'Automatic' as const,
-      fuelType: 'Essence' as const, featured: true
-    },
-    {
-      id: '2', image: car2Image, make: 'Nissan', model: 'Hilux', year: 2018,
-      price: 15500000, location: 'Musanze', daysAgo: 1, transmission: 'Manual' as const,
-      fuelType: 'Diesel' as const, featured: false
-    },
-    {
-      id: '3', image: car3Image, make: 'Honda', model: 'Civic', year: 2020,
-      price: 18000000, location: 'Huye', daysAgo: 3, transmission: 'Automatic' as const,
-      fuelType: 'Essence' as const, featured: true
-    },
-    {
-      id: '4', image: car1Image, make: 'Toyota', model: 'Camry', year: 2019,
-      price: 16000000, location: 'Kigali', daysAgo: 4, transmission: 'Automatic' as const,
-      fuelType: 'Hybrid' as const, featured: false
-    },
-    {
-      id: '5', image: car2Image, make: 'Hyundai', model: 'Santa Fe', year: 2017,
-      price: 13500000, location: 'Rubavu', daysAgo: 5, transmission: 'Manual' as const,
-      fuelType: 'Diesel' as const, featured: false
-    },
-    {
-      id: '6', image: car3Image, make: 'Kia', model: 'Sorento', year: 2021,
-      price: 22000000, location: 'Kigali', daysAgo: 1, transmission: 'Automatic' as const,
-      fuelType: 'Essence' as const, featured: true
-    },
-    {
-      id: '7', image: car1Image, make: 'Toyota', model: 'Prado', year: 2015,
-      price: 19000000, location: 'Musanze', daysAgo: 6, transmission: 'Automatic' as const,
-      fuelType: 'Diesel' as const, featured: false
-    },
-    {
-      id: '8', image: car2Image, make: 'Nissan', model: 'X-Trail', year: 2019,
-      price: 17000000, location: 'Huye', daysAgo: 2, transmission: 'Automatic' as const,
-      fuelType: 'Essence' as const, featured: true
-    },
-    {
-      id: '9', image: car3Image, make: 'Honda', model: 'CR-V', year: 2018,
-      price: 16500000, location: 'Kigali', daysAgo: 3, transmission: 'Automatic' as const,
-      fuelType: 'Essence' as const, featured: false
-    },
-    {
-      id: '10', image: car1Image, make: 'Mazda', model: 'CX-5', year: 2020,
-      price: 18500000, location: 'Rubavu', daysAgo: 1, transmission: 'Automatic' as const,
-      fuelType: 'Essence' as const, featured: true
-    },
-    {
-      id: '11', image: car2Image, make: 'Subaru', model: 'Forester', year: 2017,
-      price: 14500000, location: 'Kigali', daysAgo: 4, transmission: 'Manual' as const,
-      fuelType: 'Essence' as const, featured: false
-    },
-    {
-      id: '12', image: car3Image, make: 'Mitsubishi', model: 'Outlander', year: 2019,
-      price: 17500000, location: 'Musanze', daysAgo: 2, transmission: 'Automatic' as const,
-      fuelType: 'Essence' as const, featured: true
+  // Mock images for fallback
+  const defaultImages = [car1Image, car2Image, car3Image];
+
+  useEffect(() => {
+    fetchCars();
+  }, []);
+
+  const fetchCars = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('cars')
+        .select('*')
+        .eq('status', 'active')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Map database cars to display format
+      const mappedCars = (data || []).map((car, index) => ({
+        ...car,
+        image: car.photos?.[0] || defaultImages[index % defaultImages.length],
+        daysAgo: Math.floor((new Date().getTime() - new Date(car.created_at).getTime()) / (1000 * 3600 * 24))
+      }));
+
+      setCars(mappedCars);
+    } catch (error) {
+      console.error('Error fetching cars:', error);
+      // Fallback to mock data if database fails
+      setCars([]);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   // Filter cars based on user selections
-  const filteredCars = allCars.filter(car => {
+  const filteredCars = cars.filter(car => {
     // Make filter
     if (filters.make && car.make.toLowerCase() !== filters.make.toLowerCase()) {
       return false;
@@ -119,7 +112,7 @@ const BrowseCars = () => {
     }
     
     // Fuel type filter
-    if (filters.fuelType && car.fuelType.toLowerCase() !== filters.fuelType.toLowerCase()) {
+    if (filters.fuelType && car.fuel_type.toLowerCase() !== filters.fuelType.toLowerCase()) {
       return false;
     }
     
@@ -319,18 +312,44 @@ const BrowseCars = () => {
             </div>
 
             {/* Cars Grid/List */}
-            <div className={viewType === 'grid' 
-              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" 
-              : "space-y-4"
-            }>
-              {filteredCars.map((car) => (
-                <CarCard
-                  key={car.id} 
-                  car={car} 
-                  className={viewType === 'list' ? 'flex-row' : ''}
-                />
-              ))}
-            </div>
+            {loading ? (
+              <div className="text-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+                <p className="text-muted-foreground">Turimo gutangira imodoka...</p>
+              </div>
+            ) : filteredCars.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground text-lg mb-4">Nta modoka ziboneka</p>
+                <Button variant="outline" onClick={clearFilters}>
+                  Siba Filter
+                </Button>
+              </div>
+            ) : (
+              <div className={viewType === 'grid' 
+                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" 
+                : "space-y-4"
+              }>
+                {filteredCars.map((car) => (
+                  <CarCard
+                    key={car.id} 
+                    car={{
+                      id: car.id,
+                      image: car.image || defaultImages[0],
+                      make: car.make,
+                      model: car.model,
+                      year: car.year,
+                      price: car.price,
+                      location: car.location,
+                      daysAgo: car.daysAgo || 0,
+                      fuelType: car.fuel_type as any,
+                      transmission: car.transmission as any,
+                      featured: car.featured
+                    }} 
+                    className={viewType === 'list' ? 'flex-row' : ''}
+                  />
+                ))}
+              </div>
+            )}
 
             {/* Load More */}
             <div className="text-center mt-12">
