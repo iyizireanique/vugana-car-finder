@@ -74,6 +74,45 @@ export type Database = {
         }
         Relationships: []
       }
+      comments: {
+        Row: {
+          comment_text: string
+          created_at: string
+          id: string
+          is_approved: boolean | null
+          is_featured: boolean | null
+          rating: number | null
+          updated_at: string
+          user_email: string
+          user_id: string | null
+          user_name: string
+        }
+        Insert: {
+          comment_text: string
+          created_at?: string
+          id?: string
+          is_approved?: boolean | null
+          is_featured?: boolean | null
+          rating?: number | null
+          updated_at?: string
+          user_email: string
+          user_id?: string | null
+          user_name: string
+        }
+        Update: {
+          comment_text?: string
+          created_at?: string
+          id?: string
+          is_approved?: boolean | null
+          is_featured?: boolean | null
+          rating?: number | null
+          updated_at?: string
+          user_email?: string
+          user_id?: string | null
+          user_name?: string
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number
