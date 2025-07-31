@@ -207,28 +207,35 @@ const TestimonialsSection = () => {
             <h3 className="text-2xl font-bold text-center text-foreground mb-8">
               Ibindi Byavuzwe n'Abakiliya
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {comments.map((comment) => (
-                <Card key={comment.id} className="ring-2 ring-primary">
+                <Card key={comment.id} className="ring-2 ring-primary/20 hover:ring-primary/40 transition-all">
                   <CardContent className="p-6">
                     <div className="flex items-center mb-4">
-                      <Quote className="h-8 w-8 text-primary/20 mr-2" />
+                      <Quote className="h-6 w-6 text-primary/30 mr-3" />
                       <div className="flex">
                         {renderStars(comment.rating)}
                       </div>
                     </div>
-                    <p className="text-muted-foreground italic mb-4">
+                    <blockquote className="text-muted-foreground italic mb-4 leading-relaxed">
                       "{comment.comment_text}"
-                    </p>
+                    </blockquote>
                     <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-semibold text-foreground">{comment.user_name}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {new Date(comment.created_at).toLocaleDateString('rw-RW')}
-                        </p>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-gradient-primary rounded-full flex items-center justify-center">
+                          <span className="text-white font-bold text-sm">
+                            {comment.user_name.charAt(0)}
+                          </span>
+                        </div>
+                        <div>
+                          <p className="font-semibold text-foreground">{comment.user_name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(comment.created_at).toLocaleDateString('rw-RW')}
+                          </p>
+                        </div>
                       </div>
                       <div className="bg-primary/10 text-primary px-2 py-1 rounded-full text-xs font-medium">
-                        Featured
+                        ⭐ Featured
                       </div>
                     </div>
                   </CardContent>
@@ -240,12 +247,15 @@ const TestimonialsSection = () => {
 
         {/* Add Comment Form */}
         <div className="max-w-2xl mx-auto">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
+          <Card className="border-2 border-primary/10 bg-gradient-to-br from-card to-primary/5">
+            <CardHeader className="text-center">
+              <CardTitle className="flex items-center justify-center">
                 <MessageSquare className="h-5 w-5 mr-2 text-primary" />
                 Tanga Igitekerezo Cyawe
               </CardTitle>
+              <p className="text-sm text-muted-foreground mt-2">
+                Tubereko icyo uvuga ku serivisi zacu - igitekerezo cyawe ni cy'ingenzi!
+              </p>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmitComment} className="space-y-4">

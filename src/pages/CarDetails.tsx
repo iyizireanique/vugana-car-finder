@@ -33,51 +33,55 @@ const CarDetails = () => {
   const [sellerInfo, setSellerInfo] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  // Mock data for now (later will be replaced with database data)
-  const mockCars = [
-    {
-      id: '1', image: car1Image, make: 'Toyota', model: 'RAV4', year: 2016,
-      price: 12000000, location: 'Kigali', daysAgo: 2, transmission: 'Automatic',
-      fuelType: 'Essence', featured: true, mileage: '45,000 km',
-      condition: 'Excellent', description: 'Iyi modoka ni nziza cyane, yarafashwe neza. Ntago ifite ikibazo. Irakora neza mu mihanda yose.',
-      sellerPhone: '250788123456', sellerName: 'Jean Claude UWIMANA'
-    },
-    {
-      id: '2', image: car2Image, make: 'Nissan', model: 'Hilux', year: 2018,
-      price: 15500000, location: 'Musanze', daysAgo: 1, transmission: 'Manual',
-      fuelType: 'Diesel', featured: false, mileage: '38,000 km',
-      condition: 'Very Good', description: 'Imodoka ikomeye cyane ikwiriye akazi ko gutwara ibintu bizito. Inyongera moto mwiza.',
-      sellerPhone: '250789654321', sellerName: 'Marie Claire MUKAMAZIMPAKA'
-    },
-    {
-      id: '3', image: car3Image, make: 'Honda', model: 'Civic', year: 2020,
-      price: 18000000, location: 'Huye', daysAgo: 3, transmission: 'Automatic',
-      fuelType: 'Essence', featured: true, mileage: '22,000 km',
-      condition: 'Like New', description: 'Imodoka nshya cyane, ntiyigeze ifite ikibazo. Yakoreshejwe gake cyane.',
-      sellerPhone: '250787456123', sellerName: 'Patrick NZEYIMANA'
-    }
-  ];
-
   useEffect(() => {
     const fetchCarDetails = async () => {
       try {
-        // For now using mock data
-        const foundCar = mockCars.find(c => c.id === id);
-        if (foundCar) {
-          setCar(foundCar);
+        setLoading(true);
+        
+        // Fetch car from database
+        const { data: carData, error: carError } = await supabase
+          .from('cars')
+          .select('*')
+          .eq('id', id)
+          .eq('status', 'active')
+          .single();
+
+        if (carError) throw carError;
+
+        if (carData) {
+          // Fetch seller profile info
+          const { data: profileData, error: profileError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('user_id', carData.user_id)
+            .single();
+
+          if (profileError) {
+            console.error('Profile fetch error:', profileError);
+          }
+
+          setCar({
+            ...carData,
+            image: carData.photos?.[0] || car1Image,
+            fuelType: carData.fuel_type,
+            daysAgo: Math.floor((new Date().getTime() - new Date(carData.created_at).getTime()) / (1000 * 3600 * 24))
+          });
+
           setSellerInfo({
-            name: foundCar.sellerName,
-            phone: foundCar.sellerPhone
+            name: profileData?.full_name || 'Uwagurisha',
+            phone: profileData?.phone || 'Ntamubagazohereza'
           });
         }
-        setLoading(false);
       } catch (error) {
         console.error('Error fetching car details:', error);
+      } finally {
         setLoading(false);
       }
     };
 
-    fetchCarDetails();
+    if (id) {
+      fetchCarDetails();
+    }
   }, [id]);
 
   const formatPrice = (price: number) => {
