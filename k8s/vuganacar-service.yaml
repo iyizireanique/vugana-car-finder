@@ -1,8 +1,8 @@
-# service.yaml
 apiVersion: v1
 kind: Service
 metadata:
   name: vuganacar-service
+  namespace: vuganacar
 spec:
   type: NodePort
   selector:
@@ -10,4 +10,4 @@ spec:
   ports:
     - port: 80
       targetPort: 80
-      nodePort: 30081
+      nodePort: 30082
