@@ -40,12 +40,56 @@ const SellCar = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
-    if (files) {
-      // Mock photo upload - in real app would upload to server
-      const newPhotos = Array.from(files).map(file => URL.createObjectURL(file));
-      setUploadedPhotos(prev => [...prev, ...newPhotos].slice(0, 6));
+    if (files && user) {
+      try {
+        const newPhotos: string[] = [];
+        
+        for (const file of Array.from(files)) {
+          // Create unique filename
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+          
+          // Upload to Supabase Storage
+          const { data, error } = await supabase.storage
+            .from('car-photos')
+            .upload(fileName, file);
+          
+          if (error) {
+            console.error('Error uploading photo:', error);
+            toast({
+              title: "Ikosa",
+              description: "Ntibyakunze kwongera ifoto. Gerageza ukundi.",
+              variant: "destructive",
+            });
+            continue;
+          }
+          
+          // Get public URL
+          const { data: { publicUrl } } = supabase.storage
+            .from('car-photos')
+            .getPublicUrl(fileName);
+          
+          newPhotos.push(publicUrl);
+        }
+        
+        setUploadedPhotos(prev => [...prev, ...newPhotos].slice(0, 6));
+        
+        if (newPhotos.length > 0) {
+          toast({
+            title: "Amafoto yongerwemo!",
+            description: `${newPhotos.length} amafoto yongerwemo neza.`,
+          });
+        }
+      } catch (error) {
+        console.error('Error in photo upload:', error);
+        toast({
+          title: "Ikosa",
+          description: "Ntibyakunze kwongera amafoto. Gerageza ukundi.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
