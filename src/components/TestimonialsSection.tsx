@@ -247,18 +247,18 @@ const TestimonialsSection = () => {
         )}
 
         {/* Add Comment Form - Split Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-stretch">
           {/* Left Side - Animated Image & Description */}
           <div className="order-2 lg:order-1">
-            <div className="relative">
+            <div className="relative h-full">
               <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-accent/20 rounded-2xl blur-xl animate-pulse"></div>
-              <div className="relative bg-gradient-to-br from-card to-primary/5 rounded-2xl p-8 border border-primary/10">
+              <div className="relative bg-gradient-to-br from-card to-primary/5 rounded-2xl p-8 border border-primary/10 h-full flex flex-col">
                 <img 
                   src={testimonialsImage} 
                   alt="People sharing testimonials"
-                  className="w-full h-64 object-cover rounded-lg mb-6 animate-fade-in hover-scale"
+                  className="w-full h-64 object-cover rounded-lg mb-6 animate-fade-in hover-scale flex-shrink-0"
                 />
-                <div className="text-center space-y-4">
+                <div className="text-center space-y-4 flex-grow flex flex-col justify-center">
                   <div className="flex items-center justify-center space-x-2">
                     <Users className="h-6 w-6 text-primary" />
                     <h3 className="text-2xl font-bold text-foreground">Turakeneye Igitekerezo Cyawe!</h3>
@@ -286,7 +286,7 @@ const TestimonialsSection = () => {
 
           {/* Right Side - Comment Form */}
           <div className="order-1 lg:order-2">
-            <Card className="border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5 shadow-xl">
+            <Card className="border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5 shadow-xl h-full">
               <CardHeader className="text-center">
                 <CardTitle className="flex items-center justify-center">
                   <MessageSquare className="h-6 w-6 mr-2 text-primary animate-bounce" />

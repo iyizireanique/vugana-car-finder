@@ -89,11 +89,11 @@ const LatestListingsSection = () => {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {cars.map((car, index) => (
-                <CarCard 
+                  <CarCard 
                   key={car.id} 
                   car={{
                     id: car.id,
-                    image: car.photos?.[0] || defaultImages[index % defaultImages.length],
+                    image: (car.photos && car.photos.length > 0) ? car.photos[0] : defaultImages[index % defaultImages.length],
                     make: car.make,
                     model: car.model,
                     year: car.year,
